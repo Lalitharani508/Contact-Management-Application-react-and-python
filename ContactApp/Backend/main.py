@@ -70,10 +70,15 @@ def create_contact(contact: Contact):
 
 @app.put("/contacts/{email}")
 def update_contact(email: str, contact: Contact):
-    cursor.execute("UPDATE contacts SET first_name=?, last_name=?, address=?, phone=? WHERE email=?",
-                   (contact.first_name, contact.last_name, contact.address, contact.phone, email))
+    cursor.execute(
+        "UPDATE contacts SET first_name=?, last_name=?, address=?, phone=? WHERE email=?",
+        (contact.first_name, contact.last_name, contact.address, contact.phone, email)
+    )
     conn.commit()
+    if cursor.rowcount == 0:
+        raise HTTPException(status_code=404, detail="Contact not found")
     return {"message": "Contact updated successfully"}
+
 
 @app.delete("/contacts/{email}")
 def delete_contact(email: str):
